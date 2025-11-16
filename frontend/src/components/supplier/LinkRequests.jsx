@@ -6,14 +6,14 @@ import {
   CardContent,
   Button,
   Grid,
-  Tabs,
-  Tab,
   List,
   ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
-  ListItemAvatar,
   Avatar,
-  Chip,
+  Tabs,
+  Tab,
   IconButton,
   Menu,
   MenuItem,
@@ -22,7 +22,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Divider
+  Divider,
+  Chip
 } from '@mui/material'
 import {
   Person,
@@ -33,8 +34,10 @@ import {
   MoreVert,
   Message,
   LocationOn,
-  Star
+  Star,
+  Pending
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
 
 const mockLinkRequests = {
   pending: [
@@ -194,9 +197,11 @@ const LinkRequests = () => {
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'flex-start', flexGrow: 1 }}>
-            <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-              <Person />
-            </Avatar>
+            <Avatar 
+                    src={avatarPlaceholder}
+                    alt={request.consumerName}
+                    sx={{ mr: 2, width: 48, height: 48 }}
+                  />
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h6" gutterBottom>
                 {request.consumerName}

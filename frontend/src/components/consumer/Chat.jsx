@@ -2,10 +2,6 @@ import React, { useState } from 'react'
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  TextField,
-  Button,
   List,
   ListItem,
   ListItemText,
@@ -14,13 +10,15 @@ import {
   Divider,
   InputAdornment,
   Paper,
+  TextField,
   IconButton
 } from '@mui/material'
 import {
+  Search,
   Send,
-  Business,
-  Search
+  Business
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/business-avatar-placeholder.webp'
 
 const mockConversations = [
   {
@@ -104,9 +102,11 @@ const Chat = () => {
                 sx={{ borderBottom: 1, borderColor: 'divider' }}
               >
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: 'primary.main' }}>
-                    <Business />
-                  </Avatar>
+                  <Avatar 
+                    src={avatarPlaceholder}
+                    alt={conversation.supplierName}
+                    sx={{ width: 40, height: 40 }}
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   primary={

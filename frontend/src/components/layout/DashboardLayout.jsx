@@ -19,6 +19,7 @@ import {
   Settings,
   ChevronLeft
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
 import { useAuth } from '../../contexts/AuthContext'
 import Sidebar from './Sidebar'
 
@@ -105,9 +106,15 @@ const DashboardLayout = ({ children, userType }) => {
                 onClick={handleProfileMenuOpen}
                 sx={{ p: 0 }}
               >
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  <Person />
-                </Avatar>
+                <Avatar 
+                  src={avatarPlaceholder}
+                  alt="User Avatar"
+                  sx={{ 
+                    width: 32, 
+                    height: 32,
+                    border: '1px solid rgba(0, 0, 0, 0.1)'
+                  }}
+                />
               </IconButton>
               
               <Menu

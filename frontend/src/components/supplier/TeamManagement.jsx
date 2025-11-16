@@ -4,13 +4,8 @@ import {
   Typography,
   Card,
   CardContent,
-  Button,
   Grid,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Button,
   List,
   ListItem,
   ListItemText,
@@ -20,19 +15,28 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
   FormControl,
   InputLabel,
   Select
 } from '@mui/material'
 import {
+  Add,
   PersonAdd,
+  MoreVert,
   Edit,
   Delete,
-  MoreVert,
-  Business,
-  SupervisorAccount,
-  Person
+  Visibility,
+  AdminPanelSettings,
+  Inventory,
+  LocalShipping,
+  Assignment
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
 
 const mockTeamMembers = [
   {
@@ -199,9 +203,11 @@ const TeamManagement = () => {
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ bgcolor: `${getRoleColor(member.role)}.main`, mr: 2 }}>
-                    {getRoleIcon(member.role)}
-                  </Avatar>
+                  <Avatar 
+                    src={avatarPlaceholder}
+                    alt={member.name}
+                    sx={{ mr: 2, width: 48, height: 48 }}
+                  />
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6">{member.name}</Typography>
                     <Typography variant="body2" color="text.secondary">

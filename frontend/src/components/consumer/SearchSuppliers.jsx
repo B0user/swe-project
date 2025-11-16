@@ -1,23 +1,27 @@
 import React, { useState } from 'react'
 import {
   Box,
-  TextField,
-  Button,
-  Grid,
+  Typography,
   Card,
   CardContent,
-  Typography,
+  Grid,
+  TextField,
+  Button,
   Chip,
   Avatar,
   Rating,
   InputAdornment
 } from '@mui/material'
 import {
-  Search as SearchIcon,
+  Search,
   Business,
+  Star,
   LocationOn,
+  Phone,
+  Email,
   Send
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/business-avatar-placeholder.webp'
 
 const mockSuppliers = [
   {
@@ -80,7 +84,7 @@ const SearchSuppliers = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <Search />
               </InputAdornment>
             )
           }}
@@ -90,13 +94,15 @@ const SearchSuppliers = () => {
 
       <Grid container spacing={3}>
         {filteredSuppliers.map(supplier => (
-          <Grid item xs={12} md={6} lg={4} key={supplier.id}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={supplier.id}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                    <Business />
-                  </Avatar>
+                  <Avatar 
+                    src={avatarPlaceholder}
+                    alt={supplier.name}
+                    sx={{ mr: 2, width: 48, height: 48 }}
+                  />
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" component="h2">
                       {supplier.name}

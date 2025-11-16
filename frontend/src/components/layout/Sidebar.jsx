@@ -1,32 +1,37 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Box,
-  Drawer,
+  Typography,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography,
   IconButton,
   Divider,
   Avatar,
-  Tooltip
+  Tooltip,
+  Drawer
 } from '@mui/material'
 import {
+  Menu as MenuIcon,
+  ChevronLeft,
+  Person,
+  Logout,
+  Settings,
   Dashboard,
   Search,
-  Business,
-  Link,
-  Chat,
+  People,
+  Message,
   ShoppingCart,
   Inventory,
-  People,
-  MenuOpen,
-  Menu,
-  ChevronLeft,
-  Person
+  Group,
+  Link,
+  Business,
+  Chat,
+  Menu
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const drawerWidth = 280
@@ -98,9 +103,15 @@ const Sidebar = ({ userType, user, open, onToggle }) => {
         {/* User Profile */}
         {user && (
           <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ bgcolor: 'secondary.main' }}>
-              <Person />
-            </Avatar>
+            <Avatar 
+            src={avatarPlaceholder}
+            alt="User Avatar"
+            sx={{ 
+              width: 40, 
+              height: 40,
+              border: '2px solid rgba(255, 255, 255, 0.3)'
+            }}
+          />
             {open && (
               <Box sx={{ flex: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>

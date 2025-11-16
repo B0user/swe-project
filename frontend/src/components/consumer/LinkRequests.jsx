@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Button,
-  Chip,
   Grid,
   Tabs,
   Tab,
@@ -14,16 +13,18 @@ import {
   ListItemText,
   ListItemIcon,
   Avatar,
-  Divider
+  Divider,
+  Chip
 } from '@mui/material'
 import {
-  PersonAdd,
   Business,
   Schedule,
   CheckCircle,
   Cancel,
+  Message,
   Pending
 } from '@mui/icons-material'
+import avatarPlaceholder from '../../assets/business-avatar-placeholder.webp'
 
 const mockLinkRequests = {
   sent: [
@@ -101,9 +102,11 @@ const LinkRequests = () => {
     <Card key={request.id} sx={{ mb: 2 }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-            <Business />
-          </Avatar>
+          <Avatar 
+            src={avatarPlaceholder}
+            alt={request.supplierName}
+            sx={{ mr: 2, width: 48, height: 48 }}
+          />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h6">{request.supplierName}</Typography>
             <Typography variant="body2" color="text.secondary">

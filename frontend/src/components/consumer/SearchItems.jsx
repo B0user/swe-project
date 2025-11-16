@@ -30,7 +30,7 @@ const mockItems = [
     supplier: 'Green Farms',
     rating: 4.5,
     location: 'California',
-    image: 'https://via.placeholder.com/200x150?text=Tomatoes',
+    image: 'https://placehold.co/200x150?text=Tomatoes',
     category: 'Vegetables'
   },
   {
@@ -42,7 +42,7 @@ const mockItems = [
     supplier: 'Bakery Co',
     rating: 4.8,
     location: 'New York',
-    image: 'https://via.placeholder.com/200x150?text=Bread',
+    image: 'https://placehold.co/200x150?text=Bread',
     category: 'Bakery'
   },
   {
@@ -54,7 +54,7 @@ const mockItems = [
     supplier: 'Seafood Direct',
     rating: 4.7,
     location: 'Seattle',
-    image: 'https://via.placeholder.com/200x150?text=Salmon',
+    image: 'https://placehold.co/200x150?text=Salmon',
     category: 'Seafood'
   }
 ]
@@ -107,7 +107,7 @@ const SearchItems = () => {
 
       <Grid container spacing={3}>
         {filteredItems.map(item => (
-          <Grid item xs={12} sm={6} md={4} key={item.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardMedia
                 component="img"
