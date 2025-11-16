@@ -20,6 +20,7 @@ import {
   ChevronLeft
 } from '@mui/icons-material'
 import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
+import businessAvatarPlaceholder from '../../assets/business-avatar-placeholder.webp'
 import { useAuth } from '../../contexts/AuthContext'
 import Sidebar from './Sidebar'
 
@@ -107,7 +108,7 @@ const DashboardLayout = ({ children, userType }) => {
                 sx={{ p: 0 }}
               >
                 <Avatar 
-                  src={avatarPlaceholder}
+                  src={userType === 'supplier' ? businessAvatarPlaceholder : avatarPlaceholder}
                   alt="User Avatar"
                   sx={{ 
                     width: 32, 

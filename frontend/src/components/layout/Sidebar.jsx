@@ -32,6 +32,7 @@ import {
   Menu
 } from '@mui/icons-material'
 import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
+import businessAvatarPlaceholder from '../../assets/business-avatar-placeholder.webp'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const drawerWidth = 280
@@ -104,7 +105,7 @@ const Sidebar = ({ userType, user, open, onToggle }) => {
         {user && (
           <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar 
-            src={avatarPlaceholder}
+            src={userType === 'supplier' ? businessAvatarPlaceholder : avatarPlaceholder}
             alt="User Avatar"
             sx={{ 
               width: 40, 
