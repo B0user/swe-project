@@ -1,0 +1,297 @@
+### Supply Chain API Testing
+### Base URL
+@baseUrl = http://localhost:8000/api
+
+### Variables
+@adminEmail = admin@example.com
+@adminPassword = admin123
+@consumerEmail = consumer@example.com
+@consumerPassword = password123
+@supplierEmail = supplier@example.com
+@supplierPassword = password123
+
+@token= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzYzMzg4NzY0fQ.ONAsag2dKrTVjfX9L34mONMy1fSsGdTlXlP8s1r1dW4
+
+### ============================================
+### AUTHENTICATION ENDPOINTS
+### ============================================
+
+### Register a new consumer
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "{{consumerEmail}}",
+  "password": "{{consumerPassword}}",
+  "full_name": "John Consumer",
+  "role": "consumer"
+}
+
+### Register a new supplier
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "{{supplierEmail}}",
+  "password": "{{supplierPassword}}",
+  "full_name": "Jane Supplier",
+  "role": "supplier"
+}
+
+### Login as admin
+POST {{baseUrl}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{adminEmail}}&password={{adminPassword}}
+
+### Login as consumer
+POST {{baseUrl}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{consumerEmail}}&password={{consumerPassword}}
+
+### Login as supplier
+POST {{baseUrl}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{supplierEmail}}&password={{supplierPassword}}
+
+### ============================================
+### USER ENDPOINTS
+### ============================================
+
+### Get current user (requires token)
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Update current user (requires token)
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "newemail@example.com",
+  "full_name": "Updated Name",
+  "role": "consumer"
+}
+
+### List all users (admin only)
+GET {{baseUrl}}/users?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### Get user by ID (admin only)
+GET {{baseUrl}}/users/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### Update user by ID (admin only)
+PUT {{baseUrl}}/users/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "email": "updated@example.com",
+  "full_name": "Updated User",
+  "role": "consumer"
+}
+
+### Delete user by ID (admin only)
+DELETE {{baseUrl}}/users/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### ============================================
+### PRODUCT ENDPOINTS
+### ============================================
+
+### List all products (no auth required)
+GET {{baseUrl}}/products?skip=0&limit=10
+
+### List products by category
+GET {{baseUrl}}/products?category=vegetables&skip=0&limit=10
+
+### Search products
+GET {{baseUrl}}/products?q=tomato&skip=0&limit=10
+
+### Create a new product (supplier/admin only)
+POST {{baseUrl}}/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "name": "Fresh Tomatoes",
+  "description": "Organic red tomatoes from local farm",
+  "price": 2.50,
+  "unit": "kg",
+  "category": "vegetables",
+  "stock_quantity": 100,
+  "image_url": "https://example.com/tomato.jpg"
+}
+
+### Create another product
+POST {{baseUrl}}/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "name": "Fresh Apples",
+  "description": "Sweet red apples",
+  "price": 3.00,
+  "unit": "kg",
+  "category": "fruits",
+  "stock_quantity": 50,
+  "image_url": "https://example.com/apple.jpg"
+}
+
+### Get product by ID
+GET {{baseUrl}}/products/1
+
+### Update product (owner/admin only)
+PUT {{baseUrl}}/products/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "name": "Fresh Tomatoes",
+  "description": "Updated description",
+  "price": 2.75,
+  "unit": "kg",
+  "category": "vegetables",
+  "stock_quantity": 80
+}
+
+### Delete product (owner/admin only)
+DELETE {{baseUrl}}/products/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### ============================================
+### ORDER ENDPOINTS
+### ============================================
+
+### List all orders (admin sees all, consumer sees own)
+GET {{baseUrl}}/orders?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### List orders by status (admin only)
+GET {{baseUrl}}/orders?status=pending&skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### Create a new order (consumer only)
+POST {{baseUrl}}/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "shipping_address": "123 Main Street, City, State 12345",
+  "status": "pending",
+  "items": [
+    {
+      "product_id": 1,
+      "quantity": 5,
+      "unit_price": 2.50
+    },
+    {
+      "product_id": 2,
+      "quantity": 3,
+      "unit_price": 3.00
+    }
+  ]
+}
+
+### Get order by ID
+GET {{baseUrl}}/orders/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### Update order status (supplier/admin only)
+PUT {{baseUrl}}/orders/1/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+Content-Type: application/json
+
+{
+  "status": "processing"
+}
+
+### Get orders for specific user (admin only)
+GET {{baseUrl}}/orders/user/3?skip=0&limit=10
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
+
+### ============================================
+### HEALTH CHECK
+### ============================================
+
+### Health check endpoint
+GET {{baseUrl}}/health
+
+### Root endpoint
+GET http://localhost:8000/
+
+### ============================================
+### QUICK TEST WORKFLOW
+### ============================================
+
+### 1. First, login as admin to get token
+POST {{baseUrl}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username=admin@example.com&password=admin123
+
+### 2. Then register a consumer (use token from step 1)
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "testconsumer@example.com",
+  "password": "testpass123",
+  "full_name": "Test Consumer",
+  "role": "consumer"
+}
+
+### 3. Login as the new consumer
+POST {{baseUrl}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username=testconsumer@example.com&password=testpass123
+
+### 4. Create a product as supplier (use supplier token)
+POST {{baseUrl}}/products
+Authorization: Bearer YOUR_SUPPLIER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "name": "Organic Carrots",
+  "description": "Fresh organic carrots",
+  "price": 1.50,
+  "unit": "kg",
+  "category": "vegetables",
+  "stock_quantity": 200,
+  "image_url": "https://example.com/carrots.jpg"
+}
+
+### 5. Create an order as consumer (use consumer token)
+POST {{baseUrl}}/orders
+Authorization: Bearer YOUR_CONSUMER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "shipping_address": "456 Oak Avenue, Town, State 67890",
+  "status": "pending",
+  "items": [
+    {
+      "product_id": 1,
+      "quantity": 10,
+      "unit_price": 1.50
+    }
+  ]
+}
+
+### ============================================
+### NOTES
+### ============================================
+### 1. Replace Bearer tokens with actual tokens from login response
+### 2. Replace product IDs and user IDs with actual IDs from your database
+### 3. Make sure PostgreSQL is running and the backend is started
+### 4. Use VS Code REST Client extension to run these requests
+### 5. Install: ext install humao.rest-client
+### 6. Click "Send Request" above each endpoint to test
+### 7. Admin credentials: admin@example.com / admin123
+### 8. Default roles: consumer, supplier, admin
+### 9. Product categories: vegetables, fruits, dairy, bakery, meat, seafood, beverages, other
+### 10. Order statuses: pending, processing, shipped, delivered, cancelled
