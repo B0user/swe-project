@@ -20,3 +20,5 @@ class User(BaseModel):
     # Relationships
     products = relationship("Product", back_populates="owner")
     orders = relationship("Order", back_populates="user")
+    supplier = relationship("Supplier", back_populates="user", uselist=False)
+    link_requests = relationship("LinkRequest", back_populates="user")

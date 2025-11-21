@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   Box,
   Grid,
@@ -21,7 +21,10 @@ import {
   Message
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+
 import DashboardLayout from '../layout/DashboardLayout'
+import dashboardService from '../../services/dashboardService'
 
 const mockStats = {
   totalItems: 45,
@@ -32,7 +35,7 @@ const mockStats = {
   avgRating: 4.8
 }
 
-const recentActivity = [
+const mockRecentActivity = [
   { type: 'order', message: 'New order received from Consumer Co', time: '1 hour ago' },
   { type: 'link', message: 'Link request from Fresh Market', time: '2 hours ago' },
   { type: 'team', message: 'New team member joined', time: '3 hours ago' },
@@ -44,7 +47,7 @@ const quickActions = [
   { title: 'Link Requests', icon: <Link />, path: '/supplier/link-requests', color: '#FF9800' },
 ]
 
-const recentOrders = [
+const mockRecentOrders = [
   { id: '#ORD-001', customer: 'Consumer Co', amount: 245.50, status: 'processing' },
   { id: '#ORD-002', customer: 'Fresh Market', amount: 189.00, status: 'shipped' },
   { id: '#ORD-003', customer: 'Local Store', amount: 412.75, status: 'pending' },
@@ -52,6 +55,43 @@ const recentOrders = [
 
 const SupplierDashboard = () => {
   const navigate = useNavigate()
+  
+  const { user } = useAuth()
+  const [stats, setStats] = useState(mockStats)
+  const [recentActivity, setRecentActivity] = useState(mockRecentActivity)
+  const [recentOrders, setRecentOrders] = useState(mockRecentOrders)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Fetch dashboard data on component mount and when user changes
+  useEffect(() => {
+    if (user && user.id) {
+      fetchDashboardData()
+    }
+  }, [user])
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      if (!user || !user.id) {
+        throw new Error('User not authenticated')
+      }
+      const data = await dashboardService.getSupplierDashboard(user.id)
+      setStats(data.stats || {})
+      setRecentActivity(data.recentActivity || [])
+      setRecentOrders(data.recentOrders || [])
+    } catch (err) {
+      setError(err.message)
+      console.error('Failed to fetch dashboard data:', err)
+      // Fallback to mock data if API fails
+      setStats(mockStats)
+      setRecentActivity(mockRecentActivity)
+      setRecentOrders(mockRecentOrders)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -64,6 +104,12 @@ const SupplierDashboard = () => {
 
   return (
     <>
+      {loading && <LinearProgress />}
+      {error && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Typography color="error">Error: {error}</Typography>
+        </Box>
+      )}
       {/* Welcome Section */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
@@ -76,7 +122,7 @@ const SupplierDashboard = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
@@ -87,7 +133,7 @@ const SupplierDashboard = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Inventory />
                 <Typography variant="h4" component="div">
-                  {mockStats.totalItems}
+                  {stats.totalItems || 0}
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -97,7 +143,7 @@ const SupplierDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
             color: 'white',
@@ -108,7 +154,7 @@ const SupplierDashboard = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <ShoppingCart />
                 <Typography variant="h4" component="div">
-                  {mockStats.activeOrders}
+                  {stats.activeOrders || 0}
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -118,7 +164,7 @@ const SupplierDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
             color: 'white',
@@ -129,7 +175,7 @@ const SupplierDashboard = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <People />
                 <Typography variant="h4" component="div">
-                  {mockStats.teamMembers}
+                  {stats.teamMembers || 0}
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -139,7 +185,7 @@ const SupplierDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ 
             background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
             color: 'white',
@@ -150,7 +196,7 @@ const SupplierDashboard = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Link />
                 <Typography variant="h4" component="div">
-                  {mockStats.pendingRequests}
+                  {stats.pendingRequests || 0}
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -163,7 +209,7 @@ const SupplierDashboard = () => {
 
       {/* Quick Actions & Recent Activity */}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card sx={{ borderRadius: 2, boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
@@ -171,7 +217,7 @@ const SupplierDashboard = () => {
               </Typography>
               <Grid container spacing={2}>
                 {quickActions.map((action) => (
-                  <Grid item xs={12} sm={6} md={4} key={action.title}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={action.title}>
                     <Button
                       variant="outlined"
                       fullWidth
@@ -205,7 +251,7 @@ const SupplierDashboard = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ borderRadius: 2, boxShadow: '0 2px 12px rgba(0,0,0,0.1)', mb: 3 }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>

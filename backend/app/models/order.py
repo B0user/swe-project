@@ -14,12 +14,14 @@ class Order(BaseModel):
     __tablename__ = "orders"
     
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=True)
     total_amount = Column(Float, nullable=False)
     status = Column(Enum(OrderStatus), default=OrderStatus.PENDING, nullable=False)
     shipping_address = Column(String(255), nullable=False)
     
     # Relationships
     user = relationship("User", back_populates="orders")
+    supplier = relationship("Supplier", back_populates="orders")
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
 class OrderItem(BaseModel):

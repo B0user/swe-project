@@ -18,8 +18,7 @@ import { useAuth } from '../../contexts/AuthContext'
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    userType: 'consumer'
+    password: ''
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -34,10 +33,10 @@ const Login = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!formData.email || !formData.password || !formData.userType) {
+    if (!formData.email || !formData.password) {
       setError('Please fill in all fields')
       return
     }
@@ -45,26 +44,22 @@ const Login = () => {
     setLoading(true)
     setError('')
 
-    // Mock authentication for testing
-    setTimeout(() => {
-      const userData = {
-        id: 1,
-        name: formData.email.split('@')[0],
-        email: formData.email,
-        type: formData.userType
-      }
+    try {
+      const result = await login(formData.email, formData.password)
       
-      login(userData)
-      
-      // Redirect based on user type
-      if (formData.userType === 'consumer') {
+      // Redirect based on user role
+      if (result.user?.role === 'consumer') {
         navigate('/consumer/dashboard')
-      } else {
+      } else if (result.user?.role === 'supplier') {
         navigate('/supplier/dashboard')
+      } else {
+        navigate('/admin/dashboard')
       }
-      
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -99,19 +94,6 @@ const Login = () => {
               margin="normal"
               required
             />
-            
-            <FormControl fullWidth margin="normal">
-              <InputLabel>User Type</InputLabel>
-              <Select
-                name="userType"
-                value={formData.userType}
-                onChange={handleChange}
-                label="User Type"
-              >
-                <MenuItem value="consumer">Consumer</MenuItem>
-                <MenuItem value="supplier">Supplier</MenuItem>
-              </Select>
-            </FormControl>
             
             <Button
               type="submit"

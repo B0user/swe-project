@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -25,6 +25,7 @@ import {
   Select,
   InputAdornment,
   Switch,
+  LinearProgress,
   FormControlLabel
 } from '@mui/material'
 import {
@@ -38,6 +39,7 @@ import {
   AttachMoney,
   Visibility
 } from '@mui/icons-material'
+import productService from '../../services/productService'
 
 const mockItems = [
   {
@@ -87,13 +89,35 @@ const mockItems = [
 const categories = ['Vegetables', 'Fruits', 'Bakery', 'Seafood', 'Dairy', 'Meat']
 
 const ItemManagement = () => {
-  const [items, setItems] = useState(mockItems)
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('')
+
+  // Fetch items on component mount
+  useEffect(() => {
+    fetchItems()
+  }, [])
+
+  const fetchItems = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      // TODO: Get supplier-specific items when API supports it
+      const data = await productService.getProducts()
+      setItems(data)
+    } catch (err) {
+      setError(err.message)
+      console.error('Failed to fetch items:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
   
   const [formData, setFormData] = useState({
     name: '',
@@ -210,6 +234,12 @@ const ItemManagement = () => {
 
   return (
     <Box>
+      {loading && <LinearProgress sx={{ mb: 2 }} />}
+      {error && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Typography color="error">Error: {error}</Typography>
+        </Box>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" component="h1">
           Item Management
@@ -225,7 +255,7 @@ const ItemManagement = () => {
 
       {/* Search and Filters */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             placeholder="Search items..."
@@ -240,7 +270,7 @@ const ItemManagement = () => {
             }}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <FormControl fullWidth>
             <InputLabel>Category</InputLabel>
             <Select
@@ -257,7 +287,7 @@ const ItemManagement = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={2}>
+        <Grid size={{ xs: 12, md: 2 }}>
           <Button
             fullWidth
             variant="outlined"
@@ -274,7 +304,7 @@ const ItemManagement = () => {
       {/* Items Grid */}
       <Grid container spacing={3}>
         {filteredItems.map(item => (
-          <Grid item xs={12} sm={6} md={4} key={item.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.id}>
             <Card sx={{ height: '100%', position: 'relative' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
@@ -384,7 +414,7 @@ const ItemManagement = () => {
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="Item Name"
@@ -392,7 +422,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 label="SKU"
@@ -400,7 +430,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, sku: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Description"
@@ -410,7 +440,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -426,7 +456,7 @@ const ItemManagement = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 fullWidth
                 label="Price"
@@ -438,7 +468,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, price: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 fullWidth
                 label="Unit"
@@ -447,7 +477,7 @@ const ItemManagement = () => {
                 placeholder="kg, lb, pcs, etc."
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 fullWidth
                 label="Stock"
@@ -456,7 +486,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, stock: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <TextField
                 fullWidth
                 label="Minimum Order"
@@ -465,7 +495,7 @@ const ItemManagement = () => {
                 onChange={(e) => setFormData({...formData, minOrder: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControlLabel
                 control={
                   <Switch

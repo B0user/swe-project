@@ -99,6 +99,153 @@ DELETE {{baseUrl}}/users/2
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzAwMjM0MDAwLCJleHAiOjE3MDAyMzU4MDB9.test
 
 ### ============================================
+### SUPPLIER ENDPOINTS
+### ============================================
+
+### List all suppliers
+GET {{baseUrl}}/suppliers?skip=0&limit=10
+
+### List suppliers by category
+GET {{baseUrl}}/suppliers?category=vegetables&skip=0&limit=10
+
+### Search suppliers
+GET {{baseUrl}}/suppliers?search=green&skip=0&limit=10
+
+### Get supplier by ID
+GET {{baseUrl}}/suppliers/1
+
+### Send link request to supplier
+POST {{baseUrl}}/suppliers/link-request
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "supplier_id": 1,
+  "user_id": 2,
+  "message": "I'd like to connect with you"
+}
+
+### Get user's link requests
+GET {{baseUrl}}/suppliers/link-requests/user/2
+Authorization: Bearer {{token}}
+
+### Get supplier's link requests
+GET {{baseUrl}}/suppliers/link-requests/supplier/1
+Authorization: Bearer {{token}}
+
+### Accept link request
+PUT {{baseUrl}}/suppliers/link-requests/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "accepted"
+}
+
+### Reject link request
+PUT {{baseUrl}}/suppliers/link-requests/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "rejected"
+}
+
+### ============================================
+### MESSAGE ENDPOINTS
+### ============================================
+
+### List conversations for user
+GET {{baseUrl}}/messages/conversations?user_id=1&skip=0&limit=10
+Authorization: Bearer {{token}}
+
+### Get conversation details
+GET {{baseUrl}}/messages/conversations/1
+Authorization: Bearer {{token}}
+
+### Get messages in conversation
+GET {{baseUrl}}/messages/conversations/1/messages?skip=0&limit=50
+Authorization: Bearer {{token}}
+
+### Create new conversation
+POST {{baseUrl}}/messages/conversations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user1_id": 1,
+  "user2_id": 2
+}
+
+### Send message
+POST {{baseUrl}}/messages/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "conversation_id": 1,
+  "sender_id": 1,
+  "content": "Hello, how are you?"
+}
+
+### Get message
+GET {{baseUrl}}/messages/1
+Authorization: Bearer {{token}}
+
+### Delete message
+DELETE {{baseUrl}}/messages/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### TEAM ENDPOINTS
+### ============================================
+
+### List team members
+GET {{baseUrl}}/team/members?supplier_id=1&skip=0&limit=10
+Authorization: Bearer {{token}}
+
+### Get team member
+GET {{baseUrl}}/team/members/1
+Authorization: Bearer {{token}}
+
+### Add team member
+POST {{baseUrl}}/team/members
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "supplier_id": 1,
+  "user_id": 2,
+  "role": "manager"
+}
+
+### Update team member
+PUT {{baseUrl}}/team/members/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "role": "staff",
+  "is_active": true
+}
+
+### Remove team member
+DELETE {{baseUrl}}/team/members/1
+Authorization: Bearer {{token}}
+
+### ============================================
+### DASHBOARD ENDPOINTS
+### ============================================
+
+### Get consumer dashboard
+GET {{baseUrl}}/dashboard/consumer/1
+Authorization: Bearer {{token}}
+
+### Get supplier dashboard
+GET {{baseUrl}}/dashboard/supplier/1
+Authorization: Bearer {{token}}
+
+### ============================================
 ### PRODUCT ENDPOINTS
 ### ============================================
 

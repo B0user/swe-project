@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import authService from '../services/authService'
 
 const AuthContext = createContext()
 
@@ -13,29 +14,57 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Check for existing session (mock for testing)
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+    // Check for existing session
+    const savedUser = authService.getStoredUser()
+    if (savedUser && authService.isAuthenticated()) {
+      setUser(savedUser)
     }
     setLoading(false)
   }, [])
 
-  const login = (userData) => {
-    setUser(userData)
-    localStorage.setItem('user', JSON.stringify(userData))
+  const login = async (email, password) => {
+    try {
+      setError(null)
+      setLoading(true)
+      const result = await authService.login(email, password)
+      setUser(result.user)
+      return result
+    } catch (err) {
+      const errorMsg = err.message || 'Login failed'
+      setError(errorMsg)
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const register = (userData) => {
-    setUser(userData)
-    localStorage.setItem('user', JSON.stringify(userData))
+  const register = async (email, password, full_name, role = 'consumer') => {
+    try {
+      setError(null)
+      setLoading(true)
+      const result = await authService.register(email, password, full_name, role)
+      setUser(result.user)
+      return result
+    } catch (err) {
+      const errorMsg = err.message || 'Registration failed'
+      setError(errorMsg)
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem('user')
+  const logout = async () => {
+    try {
+      setError(null)
+      await authService.logout()
+      setUser(null)
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
   }
 
   const value = {
@@ -44,8 +73,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     loading,
-    isAuthenticated: !!user,
-    userType: user?.type // 'consumer' or 'supplier'
+    error,
+    isAuthenticated: !!user && authService.isAuthenticated(),
+    userType: user?.role // 'consumer', 'supplier', or 'admin'
   }
 
   return (

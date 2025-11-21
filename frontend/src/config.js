@@ -1,33 +1,75 @@
 // API Configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 // API Endpoints
 export const API_ENDPOINTS = {
   // Auth endpoints
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    REFRESH: '/auth/refresh',
-    LOGOUT: '/auth/logout'
+    REGISTER: '/register',
+    LOGIN: '/token',
+    LOGOUT: '/logout'
   },
   
-  // Consumer endpoints
-  CONSUMER: {
-    DASHBOARD: '/consumer/dashboard',
-    SEARCH_ITEMS: '/consumer/items/search',
-    SEARCH_SUPPLIERS: '/consumer/suppliers/search',
-    LINK_REQUESTS: '/consumer/link-requests',
-    CHAT: '/consumer/chat',
-    ORDERS: '/consumer/orders',
-    CHECKOUT: '/consumer/checkout'
+  // User endpoints
+  USERS: {
+    LIST: '/users',
+    GET: (id) => `/users/${id}`,
+    ME: '/users/me',
+    UPDATE: (id) => `/users/${id}`,
+    DELETE: (id) => `/users/${id}`
+  },
+  
+  // Product endpoints
+  PRODUCTS: {
+    LIST: '/products',
+    GET: (id) => `/products/${id}`,
+    CREATE: '/products',
+    UPDATE: (id) => `/products/${id}`,
+    DELETE: (id) => `/products/${id}`
+  },
+  
+  // Order endpoints
+  ORDERS: {
+    LIST: '/orders',
+    GET: (id) => `/orders/${id}`,
+    CREATE: '/orders',
+    UPDATE_STATUS: (id) => `/orders/${id}/status`,
+    CANCEL: (id) => `/orders/${id}/cancel`
   },
   
   // Supplier endpoints
-  SUPPLIER: {
-    DASHBOARD: '/supplier/dashboard',
-    TEAM: '/supplier/team',
-    ITEMS: '/supplier/items',
-    LINK_REQUESTS: '/supplier/link-requests'
+  SUPPLIERS: {
+    LIST: '/suppliers',
+    GET: (id) => `/suppliers/${id}`,
+    LINK_REQUEST: '/suppliers/link-request',
+    USER_REQUESTS: (id) => `/suppliers/link-requests/user/${id}`,
+    SUPPLIER_REQUESTS: (id) => `/suppliers/link-requests/supplier/${id}`,
+    UPDATE_REQUEST: (id) => `/suppliers/link-requests/${id}`
+  },
+  
+  // Message endpoints
+  MESSAGES: {
+    CONVERSATIONS: '/messages/conversations',
+    GET_CONVERSATION: (id) => `/messages/conversations/${id}`,
+    GET_MESSAGES: (id) => `/messages/conversations/${id}/messages`,
+    SEND: '/messages',
+    GET: (id) => `/messages/${id}`,
+    DELETE: (id) => `/messages/${id}`
+  },
+  
+  // Team endpoints
+  TEAM: {
+    LIST: '/team/members',
+    GET: (id) => `/team/members/${id}`,
+    ADD: '/team/members',
+    UPDATE: (id) => `/team/members/${id}`,
+    REMOVE: (id) => `/team/members/${id}`
+  },
+  
+  // Dashboard endpoints
+  DASHBOARD: {
+    CONSUMER: (id) => `/dashboard/consumer/${id}`,
+    SUPPLIER: (id) => `/dashboard/supplier/${id}`
   }
 }
 

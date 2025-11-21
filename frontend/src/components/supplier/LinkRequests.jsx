@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -23,7 +23,8 @@ import {
   DialogActions,
   TextField,
   Divider,
-  Chip
+  Chip,
+  LinearProgress
 } from '@mui/material'
 import {
   Person,
@@ -38,6 +39,7 @@ import {
   Pending
 } from '@mui/icons-material'
 import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
+import supplierService from '../../services/supplierService'
 
 const mockLinkRequests = {
   pending: [
@@ -108,12 +110,43 @@ const mockLinkRequests = {
 
 const LinkRequests = () => {
   const [tabValue, setTabValue] = useState(0)
+  const [linkRequests, setLinkRequests] = useState({ pending: [], approved: [], rejected: [] })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [dialogType, setDialogType] = useState('') // 'approve', 'reject', 'message'
   const [rejectionReason, setRejectionReason] = useState('')
   const [message, setMessage] = useState('')
+
+  // Fetch link requests on component mount
+  useEffect(() => {
+    fetchLinkRequests()
+  }, [])
+
+  const fetchLinkRequests = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      // TODO: Get supplierId from auth context or props
+      const supplierId = 1 // This should come from current user context
+      
+      // Fetch all statuses
+      const [pending, approved, rejected] = await Promise.all([
+        supplierService.getSupplierLinkRequests(supplierId, 'pending'),
+        supplierService.getSupplierLinkRequests(supplierId, 'approved'),
+        supplierService.getSupplierLinkRequests(supplierId, 'rejected')
+      ])
+      
+      setLinkRequests({ pending, approved, rejected })
+    } catch (err) {
+      setError(err.message)
+      console.error('Failed to fetch link requests:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue)
@@ -182,11 +215,11 @@ const LinkRequests = () => {
   const getRequestData = () => {
     switch (tabValue) {
       case 0:
-        return mockLinkRequests.pending
+        return linkRequests.pending
       case 1:
-        return mockLinkRequests.approved
+        return linkRequests.approved
       case 2:
-        return mockLinkRequests.rejected
+        return linkRequests.rejected
       default:
         return []
     }
@@ -304,15 +337,21 @@ const LinkRequests = () => {
 
   return (
     <Box>
+      {loading && <LinearProgress sx={{ mb: 2 }} />}
+      {error && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Typography color="error">Error: {error}</Typography>
+        </Box>
+      )}
       <Typography variant="h4" component="h1" gutterBottom>
         Link Requests
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label={`Pending (${mockLinkRequests.pending.length})`} />
-          <Tab label={`Approved (${mockLinkRequests.approved.length})`} />
-          <Tab label={`Rejected (${mockLinkRequests.rejected.length})`} />
+          <Tab label={`Pending (${linkRequests.pending.length})`} />
+          <Tab label={`Approved (${linkRequests.approved.length})`} />
+          <Tab label={`Rejected (${linkRequests.rejected.length})`} />
         </Tabs>
       </Box>
 

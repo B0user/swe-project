@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -22,7 +22,8 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  Select
+  Select,
+  LinearProgress
 } from '@mui/material'
 import {
   Add,
@@ -37,6 +38,7 @@ import {
   Assignment
 } from '@mui/icons-material'
 import avatarPlaceholder from '../../assets/avatar-placeholder.webp'
+import teamService from '../../services/teamService'
 
 const mockTeamMembers = [
   {
@@ -82,11 +84,34 @@ const mockTeamMembers = [
 ]
 
 const TeamManagement = () => {
-  const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
+  const [teamMembers, setTeamMembers] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [editingMember, setEditingMember] = useState(null)
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedMember, setSelectedMember] = useState(null)
+
+  // Fetch team members on component mount
+  useEffect(() => {
+    fetchTeamMembers()
+  }, [])
+
+  const fetchTeamMembers = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      // TODO: Get supplierId from auth context or props
+      const supplierId = 1 // This should come from current user context
+      const data = await teamService.getTeamMembers(supplierId)
+      setTeamMembers(data)
+    } catch (err) {
+      setError(err.message)
+      console.error('Failed to fetch team members:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
   
   const [formData, setFormData] = useState({
     name: '',
@@ -184,6 +209,12 @@ const TeamManagement = () => {
 
   return (
     <Box>
+      {loading && <LinearProgress sx={{ mb: 2 }} />}
+      {error && (
+        <Box sx={{ mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+          <Typography color="error">Error: {error}</Typography>
+        </Box>
+      )}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" component="h1">
           Team Management
@@ -199,7 +230,7 @@ const TeamManagement = () => {
 
       <Grid container spacing={3}>
         {teamMembers.map(member => (
-          <Grid item xs={12} sm={6} md={4} key={member.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={member.id}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -268,7 +299,7 @@ const TeamManagement = () => {
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Name"
@@ -276,7 +307,7 @@ const TeamManagement = () => {
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Email"
@@ -285,7 +316,7 @@ const TeamManagement = () => {
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Role</InputLabel>
                 <Select
@@ -299,7 +330,7 @@ const TeamManagement = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Department</InputLabel>
                 <Select

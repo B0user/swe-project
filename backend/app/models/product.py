@@ -26,5 +26,7 @@ class Product(BaseModel):
     
     # Relationships
     owner_id = Column(Integer, ForeignKey("users.id"))
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=True)
     owner = relationship("User", back_populates="products")
+    supplier = relationship("Supplier", back_populates="products")
     order_items = relationship("OrderItem", back_populates="product")

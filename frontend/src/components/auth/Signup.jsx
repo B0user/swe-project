@@ -26,7 +26,7 @@ const Signup = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   
-  const { login } = useAuth()
+  const { register } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -36,7 +36,7 @@ const Signup = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (!formData.name || !formData.email || !formData.password || !formData.userType) {
@@ -49,24 +49,16 @@ const Signup = () => {
       return
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
       return
     }
 
     setLoading(true)
     setError('')
 
-    // Mock registration for testing
-    setTimeout(() => {
-      const userData = {
-        id: Date.now(),
-        name: formData.name,
-        email: formData.email,
-        type: formData.userType
-      }
-      
-      login(userData)
+    try {
+      const result = await register(formData.email, formData.password, formData.name, formData.userType)
       
       // Redirect based on user type
       if (formData.userType === 'consumer') {
@@ -74,9 +66,11 @@ const Signup = () => {
       } else {
         navigate('/supplier/dashboard')
       }
-      
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (

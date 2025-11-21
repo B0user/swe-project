@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -15,7 +15,9 @@ import {
   Divider,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  CircularProgress,
+  Alert
 } from '@mui/material'
 import {
   ShoppingBag,
@@ -26,52 +28,36 @@ import {
   Schedule,
   Visibility
 } from '@mui/icons-material'
-
-const mockOrders = [
-  {
-    id: 'ORD-001',
-    supplierName: 'Green Farms',
-    orderDate: '2024-01-15',
-    status: 'delivered',
-    totalAmount: 45.99,
-    items: [
-      { name: 'Organic Tomatoes', quantity: 5, unit: 'kg', price: 4.99 },
-      { name: 'Fresh Lettuce', quantity: 3, unit: 'pcs', price: 2.99 }
-    ],
-    deliveryDate: '2024-01-17',
-    trackingNumber: 'TRK123456'
-  },
-  {
-    id: 'ORD-002',
-    supplierName: 'Bakery Co',
-    orderDate: '2024-01-18',
-    status: 'in-transit',
-    totalAmount: 24.47,
-    items: [
-      { name: 'Whole Wheat Bread', quantity: 2, unit: 'loaves', price: 3.49 },
-      { name: 'Croissants', quantity: 6, unit: 'pcs', price: 1.99 }
-    ],
-    deliveryDate: '2024-01-20',
-    trackingNumber: 'TRK789012'
-  },
-  {
-    id: 'ORD-003',
-    supplierName: 'Seafood Direct',
-    orderDate: '2024-01-19',
-    status: 'processing',
-    totalAmount: 38.97,
-    items: [
-      { name: 'Fresh Salmon', quantity: 3, unit: 'lb', price: 12.99 }
-    ],
-    deliveryDate: 'Estimated: 2024-01-22',
-    trackingNumber: null
-  }
-]
+import orderService from '../../services/orderService'
 
 const Orders = () => {
   const [tabValue, setTabValue] = useState(0)
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Fetch orders on component mount
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const statuses = ['processing', 'in-transit', 'delivered', 'cancelled']
+        const status = statuses[tabValue] || undefined
+        const data = await orderService.getOrders(0, 50, status)
+        setOrders(Array.isArray(data) ? data : data.items || [])
+      } catch (err) {
+        setError(err.message || 'Failed to fetch orders')
+        setOrders([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchOrders()
+  }, [tabValue])
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue)
@@ -117,12 +103,6 @@ const Orders = () => {
     }
   }
 
-  const filteredOrders = mockOrders.filter(order => {
-    if (tabValue === 0) return order.status === 'processing' || order.status === 'in-transit'
-    if (tabValue === 1) return order.status === 'delivered'
-    if (tabValue === 2) return order.status === 'cancelled'
-    return true
-  })
 
   const renderOrderCard = (order) => (
     <Card key={order.id} sx={{ mb: 2 }}>
@@ -221,24 +201,38 @@ const Orders = () => {
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabValue} onChange={handleTabChange}>
-          <Tab label="Active Orders" />
-          <Tab label="Completed Orders" />
-          <Tab label="Cancelled Orders" />
+          <Tab label="Processing" />
+          <Tab label="In Transit" />
+          <Tab label="Delivered" />
+          <Tab label="Cancelled" />
         </Tabs>
       </Box>
 
-      {filteredOrders.length > 0 ? (
-        filteredOrders.map(renderOrderCard)
-      ) : (
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!loading && orders.length > 0 ? (
+        orders.map(renderOrderCard)
+      ) : !loading && (
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <ShoppingBag sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">
             No orders found
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {tabValue === 0 && 'You don\'t have any active orders'}
-            {tabValue === 1 && 'You haven\'t completed any orders yet'}
-            {tabValue === 2 && 'You haven\'t cancelled any orders'}
+            {tabValue === 0 && 'You don\'t have any processing orders'}
+            {tabValue === 1 && 'You don\'t have any in-transit orders'}
+            {tabValue === 2 && 'You haven\'t completed any orders yet'}
+            {tabValue === 3 && 'You haven\'t cancelled any orders'}
           </Typography>
           <Button
             variant="contained"
